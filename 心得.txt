@@ -1,0 +1,14 @@
+1、如何理解
+F:\2022\vue3\51cto\vue3.2-vite\src\layout\components\Header\BreadCrumb.vue 中的：const breadcrumbList: Ref<RouteLocationMatched[]> = ref([]);
+
+2、如何理解
+F:\2022\vue3\51cto\vue3.2-vite\src\store\index.ts 中的createStore<State>
+interface State {
+  count:number
+}
+export const store = createStore<State>({
+  state() {
+    return {
+      count:1
+    }
+  },
