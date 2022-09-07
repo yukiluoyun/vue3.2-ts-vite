@@ -151,13 +151,15 @@ const edit = (selecteRole: object) => {
 };
 // 删除角色
 const delRoles = (id: number) => {
-  proxy?.$Confirm('确定要删除角色吗？').then(() => {
-    deleteRoles([id]).then(() => {
-      proxy?.$Notify.success('删除成功');
-      _getAllRoles();
-    });
-  });
-  _getAllRoles();
+  proxy
+    ?.$Confirm('确定要删除角色吗？')
+    .then(() => {
+      deleteRoles([id]).then(() => {
+        proxy?.$Notify.success('删除成功');
+        _getAllRoles();
+      });
+    })
+    .catch(() => {});
 };
 </script>
 
