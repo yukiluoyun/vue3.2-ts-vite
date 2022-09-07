@@ -41,16 +41,13 @@
         <el-table-column prop="description" label="描述"></el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
-            <!-- <el-button type="text" @click="toSetpermissions(scope.row)"
+            <el-button type="text" @click="toSetpermissions(scope.row)"
               >授权</el-button
             >
             <el-button type="text" @click="edit(scope.row)">编辑</el-button>
             <el-button type="text" @click="delRoles(scope.row.id)"
               >删除</el-button
-            > -->
-            <el-button type="text">授权</el-button>
-            <el-button type="text">编辑</el-button>
-            <el-button type="text">删除</el-button>
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -134,19 +131,34 @@ const handelConfirm = () => {
       _getAllRoles();
       state.dialogVisible = false;
     });
+  } else if (state.formTitle === '编辑角色') {
+    updateRole(state.formData).then((res) => {
+      proxy?.$Notify.success('编辑角色成功');
+      _getAllRoles();
+      state.dialogVisible = false;
+    });
   }
 };
+
 // 重置表单
+const toSetpermissions = (selecteRole: any) => {};
 
-// const toSetpermissions = (selecteRole:any){
-
-// }
-// const edit = (selecteRole:object){
-
-// }
-// const delRoles = (id:number){
-
-// }
+// 更新角色
+const edit = (selecteRole: object) => {
+  state.formData = JSON.parse(JSON.stringify(selecteRole));
+  state.dialogVisible = true;
+  state.formTitle = '编辑角色';
+};
+// 删除角色
+const delRoles = (id: number) => {
+  proxy?.$Confirm('确定要删除角色吗？').then(() => {
+    deleteRoles([id]).then(() => {
+      proxy?.$Notify.success('删除成功');
+      _getAllRoles();
+    });
+  });
+  _getAllRoles();
+};
 </script>
 
 <style lang="scss" scoped></style>
