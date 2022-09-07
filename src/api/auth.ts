@@ -17,3 +17,11 @@ export function getCode() {
       data: requestUser
     })
   }
+  
+// 通过token登录
+export function loginByToken(token: string) {
+  return http({
+    url: "/auth/loginByToken?token=" + token,
+    method:'post'
+  })
+}

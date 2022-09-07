@@ -5,7 +5,15 @@ const http = axios.create({
   withCredentials:true
 })
 
-// 请求后返回的数据
+// 请求拦截器
+http.interceptors.request.use(request => {
+  if (request.headers) {
+    request.headers.token = localStorage.getItem("token") || '0'
+    request.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    return request
+  }
+})
+// 返回拦截器
 http.interceptors.response.use(response=>{
   const res = response.data
   if(res.code === 200) {

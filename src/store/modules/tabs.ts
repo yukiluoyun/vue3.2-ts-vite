@@ -1,20 +1,24 @@
 import router from "@/router"
-import { createStore } from "vuex"
-import { Itab } from "./type"
+import { Module } from "vuex"
+import { RootState } from "../index"
+import { Itab } from "../type"
 
-interface State {
+
+export interface TabState {
   tabList: Array<Itab>,
   currentPath:String
 }
 
-export const store = createStore<State>({
+
+export const tabStore:Module<TabState,RootState> = {
+  namespaced: true,
   state:{
     tabList: [],
     currentPath:''
   },
   mutations: {
     // 点击左侧菜单，添加顶部tab
-    addTab(state: State, tab: Itab) {
+    addTab(state: TabState, tab: Itab) {
       const hasTab = state.tabList.some((item) => {
         return item.path === tab.path
       })
@@ -23,23 +27,22 @@ export const store = createStore<State>({
       }
     },
     // 关闭删除tab
-    closeTab(state: State, tabPath: string) {
+    closeTab(state: TabState, tabPath: string) {
       const index = state.tabList.findIndex(item => item.path === tabPath)
       state.tabList.splice(index,1)
     },
     // 保存右键点击的id,也就是path，供关闭其他、左右tab用
-    saveCurrentPath(state: State, path: string) {
+    saveCurrentPath(state: TabState, path: string) {
       state.currentPath = path
     },
     // 鼠标右键关闭所有
-    closeTabAll(state: State) {
+    closeTabAll(state: TabState) {
       console.log("store-closeTabAll")
       state.tabList = []
       sessionStorage.removeItem("TABS_ROUTES")
-      router.push({path:"/"})
     },
       // 鼠标右键关闭左、右、其他,flag判断左、右、其他
-    closeTabOther(state: State, flag: string) {
+    closeTabOther(state: TabState, flag: string) {
       console.log("flag==", flag)
       console.log(" state.currentPath==",  state.currentPath)
       const index = state.tabList.findIndex(item => item.path === state.currentPath)
@@ -57,9 +60,10 @@ export const store = createStore<State>({
       }
   },
   getters: {
-    getAddTab(state:State) {
+    getAddTab(state:TabState) {
       return  state.tabList
     }
   }
 
-})
+}
+

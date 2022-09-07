@@ -58,55 +58,58 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { getCode, login } from '@/api/auth';
+import { getCode, login, loginByToken } from '@/api/auth';
 import { useRouter } from 'vue-router';
 import { User, Lock } from '@element-plus/icons-vue';
+import { useStore } from '@/store';
 
+const store = useStore();
 const router = useRouter();
 const loginForm = reactive({
+  ip: '',
   username: 'admin',
   password: '123456',
   uuid: '',
-  verifyCode: '',
+  verifyCode: ''
 });
 const loginRules = reactive({
   username: [
     {
       required: true,
       message: '用户名不能为空',
-      trigger: 'blur',
+      trigger: 'blur'
     },
     {
       pattern: /^[a-zA_Z0-9]{2,10}/,
       message: '请输入2-10个字母或数字',
-      trigger: 'blur',
-    },
+      trigger: 'blur'
+    }
   ],
   password: [
     {
       required: true,
       message: '密码不能为空',
-      trigger: 'blur',
+      trigger: 'blur'
     },
     {
       min: 3,
       max: 15,
       message: '请输入3-15位的字母或数字',
-      trigger: 'blur',
-    },
+      trigger: 'blur'
+    }
   ],
   verifyCode: [
     {
       required: true,
       message: '验证码不能为空',
-      trigger: 'blur',
+      trigger: 'blur'
     },
     {
       whitespace: true,
-      message: '不能使用空格',
-    },
+      message: '不能使用空格'
+    }
   ],
-  uuid: '',
+  uuid: ''
 });
 // 加载或更新图片验证码
 const codeUrl = ref<string>();
@@ -116,19 +119,26 @@ const loadValidateImg = () => {
   });
 };
 onMounted(() => {
-  loadValidateImg();
+  getValidaCode();
+  handleLoginByToken();
 });
 const getValidaCode = () => {
   loadValidateImg();
-};
-
-const handleLogin = () => {
-  login(loginForm).then((res) => {
-    console.log('login-res==', res);
-    if (res.data.token) {
-      router.push({ path: '/index' });
-    }
+  getCode().then((res) => {
+    codeUrl.value = res.data.image;
+    loginForm.uuid = res.data.uuid;
   });
+};
+// 登录提交
+const handleLogin = () => {
+  store.dispatch('authStore/login', loginForm);
+};
+// 当有token 的情况下，自动登录，不经过登陆页
+const handleLoginByToken = () => {
+  let token = localStorage.getItem('token');
+  if (token) {
+    store.dispatch('authStore/loginByToken', token);
+  }
 };
 </script>
 

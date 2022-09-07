@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
 import Layout from "@/layout/index.vue"
+import { store } from "@/store"
+import {loginByToken} from "@/api/auth"
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
@@ -187,5 +189,23 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes:routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token")
+  if (!store.state.authStore.token && !token) {
+    if (to.path.startsWith("/login")) {
+      next()
+    } else {
+      console.log("还没有登录")
+      next("/login")
+    }
+  } else if (!store.state.authStore.token && token) { //刷新情况下，vuex里的token 被清空了，但是localstorage的还在
+    store.dispatch("authStore/loginByToken", token)
+    console.log(router.getRoutes())
+    next()
+  } else {
+    next()
+  }
 })
 export default router
