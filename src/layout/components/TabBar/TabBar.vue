@@ -14,8 +14,7 @@
       :key="tab.path"
       :label="tab.title"
       :name="tab.path"
-      >{{ tab.title }}</el-tab-pane
-    >
+    ></el-tab-pane>
   </el-tabs>
 
   <el-card

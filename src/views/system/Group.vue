@@ -34,6 +34,30 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 树状结构 授权 -->
+    <el-dialog
+      title="角色授权"
+      v-model="state.showSetPermissionDialog"
+      destroy-on-close
+    >
+      <el-form>
+        <el-form-item>
+          <el-tree
+            ref="permissionRef"
+            :data="state.permissionTree"
+            show-checkbox
+            :props="state.defaultProps"
+            node-key="permission"
+            :default-checked-keys="state.permissions"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="resetChecked">清空</el-button>
+          <el-button type="primary" @click="setPermission">确认</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
     <!-- 角色表 -->
     <div style="margin: 5px 10px; text-align: left">
       <el-table :data="state.roles">
@@ -81,6 +105,7 @@ const state = reactive({
   roles: [],
   formTitle: '',
   dialogVisible: false,
+  showSetPermissionDialog: false,
   formData: {
     id: 0,
     name: '',
@@ -95,6 +120,13 @@ const state = reactive({
       }
     ],
     description: []
+  },
+  permissionTree: permissionTree,
+  permissions: [],
+  defaultProps: {
+    label: 'title',
+    id: 'title',
+    children: 'children'
   }
 });
 // 初始化
@@ -140,12 +172,10 @@ const handelConfirm = () => {
   }
 };
 
-// 重置表单
-const toSetpermissions = (selecteRole: any) => {};
-
-// 更新角色
+// 更新/编辑角色
 const edit = (selecteRole: object) => {
-  state.formData = JSON.parse(JSON.stringify(selecteRole));
+  console.log('selecteRole=', selecteRole);
+  state.formData = JSON.parse(JSON.stringify(selecteRole)); // 进行深拷贝
   state.dialogVisible = true;
   state.formTitle = '编辑角色';
 };
@@ -160,6 +190,43 @@ const delRoles = (id: number) => {
       });
     })
     .catch(() => {});
+};
+
+// 显示授权选择项树结构，并加载权限树结构节点，并返回对应的已有权限
+const toSetpermissions = (selecteRole: any) => {
+  state.formData = JSON.parse(JSON.stringify(selecteRole));
+  state.permissions = [];
+  state.showSetPermissionDialog = true;
+  getPermissionsOfRole(selecteRole.id).then((res) => {
+    console.log('res===', res);
+    state.permissions = [];
+    state.permissions = res.data;
+  });
+};
+
+//重置角色授权弹窗树节点
+const permissionRef = ref<InstanceType<typeof ElTree>>();
+const resetChecked = () => {
+  permissionRef.value!.setCheckedKeys([], false);
+};
+// 提交确定的角色授权弹窗节点
+const setPermission = () => {
+  let nodes = permissionRef.value!.getCheckedNodes(false, false); //不只是选中子节点，选中的父节点也返回；不选中半选状态下的节点
+  console.log('nodes==', nodes);
+  let permissions = nodes.map((item) => {
+    if (item.permission) {
+      return item.permission;
+    }
+  });
+  console.log('收集的==', permissions);
+  let vo = {
+    roleId: state.formData.id,
+    permissions
+  };
+  updateRolePermission(vo).then((res) => {
+    proxy?.$Notify.success('权限修改成功');
+    state.showSetPermissionDialog = false;
+  });
 };
 </script>
 

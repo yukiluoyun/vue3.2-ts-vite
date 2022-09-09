@@ -2,7 +2,8 @@ import { Module } from "vuex"
 import { RootState } from "../index"
 import { login, loginByToken } from "@/api/auth"
 import router from "@/router"
-import {UserType} from "../type"
+import { UserType } from "../type"
+import {store} from "@/store"
 
 export interface AuthState {
   token: string,
@@ -44,30 +45,29 @@ export const authStore: Module<AuthState, RootState> = {
         }
         commit('addUserInfo',user)
         commit('addToken', res.data.token)
+        console.log("login---")
+        store.dispatch("menuStore/generateSystemMenus",res.data.permissions)
         localStorage.setItem("token",res.data.token)
         router.push({path:"/index"})
       })
     },
     // 如果已经登录过，有token则直接模拟登录操作，跳过登录页:有token但是没有用户信息，就直接根据token反向获取用户信息
+    // token登录
     loginByToken({ commit, state, dispatch }, token) {
       commit('addToken', token)
-      loginByToken(token).then(res => {
-        console.log("根据token 返回登录信息==", res)
-        localStorage.setItem("token", token)
-        if (res.data.status) {
-          const {avatar,username,roleName,status}  = res.data
-          const user = {
-            avatar,
-            username,
-            roleName,
-            status
+      loginByToken(token).then(result => {
+          state.userInfo = result.data
+          localStorage.setItem('token', result.data.token)
+          store.dispatch('menuStore/generateSystemMenus',result.data.permissions)
+          console.log(result)
+          if (result.data.status) {
+              router.push({ path: '/index' })
           }
-          commit('addUserInfo',user)
-        }
       }).catch(() => {
-        localStorage.removeItem("token")
+          localStorage.removeItem('token')
       })
     },
+    // 退出
     logout({ commit, state, dispatch }) {
       state.token = ""
       state.userInfo =  {
