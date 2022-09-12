@@ -1,6 +1,6 @@
 import Layout from '@/layout/index.vue'
 import {RouteRecordRaw} from 'vue-router'
-
+import i18n from "@/i18n"
 
 const goodsRouter:RouteRecordRaw = 
 {
@@ -10,6 +10,7 @@ const goodsRouter:RouteRecordRaw =
    component:Layout,
    meta: {
      title: 'menus.wGoodsManger',
+    //  title: i18n.global.t('menus.wGoodsManger'),
      icon: 'TakeawayBox',
      permission: "system:goods",
    },

@@ -12,7 +12,7 @@
     <el-tab-pane
       v-for="(tab, index) in tabList"
       :key="tab.path"
-      :label="tab.title"
+      :label="$t(tab.title)"
       :name="tab.path"
     ></el-tab-pane>
   </el-tabs>

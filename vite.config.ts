@@ -7,6 +7,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
 // import { resolve } from 'path'
 import path from 'path'
+import viteCompression from 'vite-plugin-compression';
+
 export default defineConfig({
   server: {
     port: 3000,
@@ -26,6 +28,8 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+      // giz压缩
+      viteCompression(),
       AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
@@ -42,6 +46,17 @@ export default defineConfig({
       },
     },
   },
+  // 打包相关
+  build: {
+    chunkSizeWarningLimit: 1500,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        //生产环境去除console.log
+        drop_console:true 
+      }
+    }
+  }
 
 })
 

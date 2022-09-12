@@ -8,7 +8,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     title: string,
     icon?: string,
-    permission:string
+    permission: string,
+    index?:number //渲染顺序用，过渡动画方式用
   }
 }
 const routes: Array<RouteRecordRaw> = [
@@ -33,11 +34,12 @@ router.beforeEach((to,from,next)=>{
         next('/login')
       }
   } else if(!store.state.authStore.token && token) {
-    loginByToken(token).then(res=>{
+    loginByToken(token).then(res => {
+      console.log("loginByToken==", res)
       if(res.data.status) {
        store.commit('authStore/addUserInfo',res.data)
        store.dispatch('menuStore/generateSystemMenus',res.data.permissions)
-      //  store.dispatch('buttonStore/generateButtons',res.data.permissions)
+       store.dispatch('buttonStore/generateButtons',res.data.permissions)
        if(to.matched.length == 0) {
         
           router.push(to.path)

@@ -1,7 +1,8 @@
 <template>
   <el-breadcrumb separator="/">
+    <el-breadcrumb-item>{{ $t('menus.wIndex') }}</el-breadcrumb-item>
     <el-breadcrumb-item v-for="(item, index) in breadcrumbList">{{
-      item.meta.title
+      $t(item.meta.title)
     }}</el-breadcrumb-item>
   </el-breadcrumb>
 </template>
@@ -20,8 +21,9 @@ const getBreachCrumbList = () => {
   );
   const first = list[0]; //实际会有两条，
 
-  if (route.path !== '/index') {
-    list = [{ path: '/index', meta: { title: '首页' } } as any].concat(list); //如果是只有一级的菜单，在前面手动再加一个“首页",纯粹是为了样式上好看
+  if (route.path == '/index') {
+    // list = [{ path: '/index', meta: { title: '首页' } } as any].concat(list); //如果是只有一级的菜单，在前面手动再加一个“首页",纯粹是为了样式上好看
+    list = []; //后来因为i18n在js切换时不起作用，已经移到了template 写死，所以这里直接去掉
   }
   breadcrumbList.value = list;
 };

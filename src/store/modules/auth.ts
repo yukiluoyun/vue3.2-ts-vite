@@ -45,8 +45,8 @@ export const authStore: Module<AuthState, RootState> = {
         }
         commit('addUserInfo',user)
         commit('addToken', res.data.token)
-        console.log("login---")
         store.dispatch("menuStore/generateSystemMenus",res.data.permissions)
+        store.dispatch("menuStore/generateButtons",res.data.permissions)
         localStorage.setItem("token",res.data.token)
         router.push({path:"/index"})
       })
@@ -56,9 +56,11 @@ export const authStore: Module<AuthState, RootState> = {
     loginByToken({ commit, state, dispatch }, token) {
       commit('addToken', token)
       loginByToken(token).then(result => {
-          state.userInfo = result.data
+        state.userInfo = result.data
+        console.log(result)
           localStorage.setItem('token', result.data.token)
-          store.dispatch('menuStore/generateSystemMenus',result.data.permissions)
+        store.dispatch('menuStore/generateSystemMenus', result.data.permissions)
+        store.dispatch("menuStore/generateButtons",result.data.permissions)
           console.log(result)
           if (result.data.status) {
               router.push({ path: '/index' })
