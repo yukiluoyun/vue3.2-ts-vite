@@ -9,7 +9,8 @@ declare module 'vue-router' {
     title: string,
     icon?: string,
     permission: string,
-    index?:number //渲染顺序用，过渡动画方式用
+    index?: number, //渲染顺序用，过渡动画方式用
+    keepAlive?:boolean
   }
 }
 const routes: Array<RouteRecordRaw> = [

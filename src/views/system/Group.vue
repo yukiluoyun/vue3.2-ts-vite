@@ -78,7 +78,12 @@
     </div>
   </div>
 </template>
-
+<!-- 定义name,让keep-alive的include检索 -->
+<script lang="ts">
+export default {
+  name: 'group'
+};
+</script>
 <script setup lang="ts">
 import {
   deleteRoles,

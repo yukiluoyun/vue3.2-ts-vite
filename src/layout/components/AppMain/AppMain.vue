@@ -5,7 +5,9 @@
 
     <router-view v-slot="{ Component }">
       <transition :name="transitionName">
-        <component :is="Component" />
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
       </transition>
     </router-view>
   </div>
@@ -13,21 +15,52 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useStore } from 'vue-router';
-const transitionName = ref();
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const transitionName = ref('slide-left');
+
+console.log('route--', route.meta);
+
+// 监控路由meta的index,index对比选择往左还是往右
+watch(
+  () => route.meta.index,
+  (to, from) => {
+    if (to && from) {
+      transitionName.value = to < from ? 'slide-right' : 'slide-left';
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>
-.fade-transform-leave-active,
-.fade-transform-enter-actvie {
-  transition: all 0.4s;
+.slide-right-enter-active,
+.slide-right-leave-active,
+.slide-left-enter-active,
+.slide-left-leave-active {
+  width: 100vw;
+  will-change: transform;
+  transition: all 500ms;
+  // position: absolute;
 }
-.fade-transform-enter-from {
+
+.slide-right-enter {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: translate3d(-100%, 0, 0);
 }
-.fade-transform-leave-to {
+
+.slide-right-leave-active {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translate3d(100%, 0, 0);
+}
+
+.slide-left-enter {
+  opacity: 0;
+  transform: translate3d(100%, 0, 0);
+}
+
+.slide-left-leave-active {
+  opacity: 0;
+  transform: translate3d(-100%, 0, 0);
 }
 </style>
