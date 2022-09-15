@@ -4,8 +4,8 @@
     <router-view />
 
     <router-view v-slot="{ Component }">
-      <transition :name="transitionName">
-        <keep-alive>
+      <transition :name="transitionName" mode="out-in" appear>
+        <keep-alive :include="includeList">
           <component :is="Component" />
         </keep-alive>
       </transition>
@@ -14,13 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, Ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const transitionName = ref('slide-left');
-
-console.log('route--', route.meta);
+const includeList: Ref<string[]> = ref([]);
 
 // 监控路由meta的index,index对比选择往左还是往右
 watch(
@@ -30,6 +29,26 @@ watch(
       transitionName.value = to < from ? 'slide-right' : 'slide-left';
     }
   }
+);
+watch(
+  () => route,
+  (newVal: any, oldVal: any) => {
+    console.log('-----name=', newVal.name);
+    console.log('-----keepAlive=', newVal.meta.keepAlive);
+    console.log(
+      '-----includeList.value.indexOf(newVal.name)=',
+      includeList.value.indexOf(newVal.name)
+    );
+    if (
+      newVal.name &&
+      newVal.meta.keepAlive &&
+      includeList.value.indexOf(newVal.name) === -1
+    ) {
+      includeList.value.push(newVal.name);
+    }
+    console.log(includeList.value);
+  },
+  { deep: true }
 );
 </script>
 

@@ -64,17 +64,26 @@
         </el-table-column>
         <el-table-column label="操作" width="220px">
           <template #default="scope">
-            <el-button type="text" size="small" @click="toSetRole(scope.row.id)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="toSetRole(scope.row.id)"
               >授权</el-button
             >
-            <el-button type="text" size="small" @click="resetPw(scope.row.id)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="resetPw(scope.row.id)"
               >重置密码</el-button
             >
-            <el-button type="text" size="small" @click="toEditUser(scope.row)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="toEditUser(scope.row)"
               >编辑</el-button
             >
             <el-button
-              type="text"
+              type="primary"
               size="small"
               @click="deleteUser(scope.row.id)"
               >删除</el-button
