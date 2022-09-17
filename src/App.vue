@@ -4,4 +4,8 @@
   <router-view></router-view>
 </template>
 
-<style scoped></style>
+<style>
+#nprogress .bar {
+  background: red !important;
+}
+</style>

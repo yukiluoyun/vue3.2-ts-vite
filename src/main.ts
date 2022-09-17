@@ -4,8 +4,9 @@ import App from './App.vue'
 
 import router from "./router"
 import { store,key } from "./store"
-
+import { createPinia } from "pinia"
 const app = createApp(App)
+const pinia = createPinia()
 // 全局引入element-icon
 import * as ElIcons from "@element-plus/icons"
 import * as ElementUI from "element-plus"
@@ -44,6 +45,7 @@ app.config.globalProperties.$Notify = ElementUI.ElNotification
 app.use(router)
 app.use(store,key)
 app.use(i18n)
+app.use(pinia)
 app.mount('#app')
 
 // createApp(App).use(router).mount('#app')

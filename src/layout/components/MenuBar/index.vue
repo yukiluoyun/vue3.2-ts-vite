@@ -14,6 +14,7 @@
 import { reactive } from 'vue';
 import MenuItem from './MenuItem.vue';
 import { useStore } from '@/store';
+import { menuStore } from '@/pinia/menuStore';
 const store = useStore();
 defineProps({
   collapsed: {
@@ -21,7 +22,9 @@ defineProps({
   }
 });
 
-const menus = store.getters['menuStore/getMenus'];
+const useMenuStore = menuStore();
+const menus = useMenuStore.getMenus;
+// const menus = store.getters['menuStore/getMenus'];
 console.log('menus==', menus);
 </script>
 

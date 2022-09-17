@@ -62,6 +62,7 @@ import { getCode, login, loginByToken } from '@/api/auth';
 import { useRouter } from 'vue-router';
 import { User, Lock } from '@element-plus/icons-vue';
 import { useStore } from '@/store';
+import { authStore } from '@/pinia/authStroe';
 
 const store = useStore();
 const router = useRouter();
@@ -131,13 +132,17 @@ const getValidaCode = () => {
 };
 // 登录提交
 const handleLogin = () => {
-  store.dispatch('authStore/login', loginForm);
+  const useAuthStore = authStore();
+  useAuthStore.login(loginForm);
+  // store.dispatch('authStore/login', loginForm);
 };
 // 当有token 的情况下，自动登录，不经过登陆页
 const handleLoginByToken = () => {
   let token = localStorage.getItem('token');
   if (token) {
-    store.dispatch('authStore/loginByToken', token);
+    const useAuthStore = authStore();
+    useAuthStore.loginByToken(token);
+    // store.dispatch('authStore/loginByToken', token);
   }
 };
 </script>

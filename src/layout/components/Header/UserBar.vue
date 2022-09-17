@@ -23,9 +23,13 @@
 import { ArrowDown } from '@element-plus/icons-vue';
 import { computed } from 'vue';
 import { useStore } from '@/store';
+import { authStore } from '@/pinia/authStroe';
+
 const store = useStore();
 const userInfo = computed(() => {
-  return store.state.authStore.userInfo;
+  const useAuthStore = authStore();
+  return useAuthStore.userInfo;
+  // return store.state.authStore.userInfo;
 });
 const logout = () => {
   store.dispatch('authStore/logout');

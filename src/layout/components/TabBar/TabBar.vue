@@ -33,14 +33,17 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from '@/store/index';
 import { useRoute, useRouter } from 'vue-router';
 import { Itab } from '@/store/type';
+import { tabStore } from '@/pinia/tabStore';
 
+const useTabStore = tabStore();
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const tabList = computed(() => {
   //不能使用state.tabList是因为要实时监听
   // return store.getters.getAddTab;
-  return store.getters['tabStore/getAddTab'];
+  return useTabStore.getAddTab;
+  // return store.getters['tabStore/getAddTab'];
 });
 
 // import type { TabsPaneContext } from 'element-plus';
@@ -55,7 +58,8 @@ const addTab = () => {
     title: meta.title as string
   };
   // store.commit('addTab', tab);
-  store.commit('tabStore/addTab', tab);
+  // store.commit('tabStore/addTab', tab);
+  useTabStore.addTab(tab);
 };
 // 刷新页面时，会触发beforeunload VUEX里的数据会丢失，需要保存到本地
 // 上下文原理，不能放在watch 后，以防出现刷新后，tab排布与之前不一致的现象。
@@ -72,7 +76,8 @@ const refresh = () => {
     //如果存在，则将缓存在本地的数据加载到相应的系统运行里面，vuex,因为此数据都是在vuex里操作的
     let list = JSON.parse(session);
     list.forEach((item: Itab) => {
-      store.commit('tabStore/addTab', item);
+      // store.commit('tabStore/addTab', item);
+      useTabStore.addTab(item);
     });
   }
 };
@@ -109,7 +114,8 @@ const removeTab = (targetPath: any) => {
     });
   }
   // 对数据进行删除
-  store.commit('tabStore/closeTab', targetPath);
+  // store.commit('tabStore/closeTab', targetPath);
+  useTabStore.closeTab(targetPath);
 };
 
 onMounted(() => {
@@ -122,21 +128,24 @@ let top = ref('');
 // 鼠标右键-关闭所有等
 const openContextMenu = (e: any) => {
   let path = e.srcElement.id.split('-')[1];
-  store.commit('tabStore/saveCurrentPath', path);
+  // store.commit('tabStore/saveCurrentPath', path);
+  useTabStore.saveCurrentPath(path);
   showCloseAllVisible.value = true;
   left.value = e.clientX;
   top.value = e.clientY + 10;
 };
 // 鼠标右键关闭所有
 const closeAll = () => {
-  store.commit('tabStore/closeTabAll');
+  // store.commit('tabStore/closeTabAll');
+  useTabStore.closeTabAll();
 
   showCloseAllVisible.value = false;
   router.push({ path: '/' });
 };
 // 鼠标右键关闭左、右、其他
 const closeTabOther = (flag: string) => {
-  store.commit('tabStore/closeTabOther', flag);
+  // store.commit('tabStore/closeTabOther', flag);
+  useTabStore.closeTabOther(flag);
   showCloseAllVisible.value = false;
 };
 
