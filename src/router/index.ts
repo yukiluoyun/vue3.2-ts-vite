@@ -3,6 +3,7 @@ import { store } from "@/store"
 import { loginByToken } from "@/api/auth"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
+import { authStore } from '@/pinia/authStroe';
 // declare 的目标是vue-route; 根据报错信息得知是routeMeta报错，所以如下写
 
 NProgress.configure({
@@ -44,14 +45,19 @@ router.beforeEach((to,from,next)=>{
   } else if(!store.state.authStore.token && token) {
     loginByToken(token).then(res => {
       console.log("loginByToken==", res)
-      if(res.data.status) {
-       store.commit('authStore/addUserInfo',res.data)
-       store.dispatch('menuStore/generateSystemMenus',res.data.permissions)
-       store.dispatch('buttonStore/generateButtons',res.data.permissions)
-       if(to.matched.length == 0) {
+      if (res.data.status) {
+
+      //  store.commit('authStore/addUserInfo',res.data)
+      //  store.dispatch('menuStore/generateSystemMenus',res.data.permissions)
+      //  store.dispatch('buttonStore/generateButtons',res.data.permissions)
+      const useAuthStore = authStore()
+      useAuthStore.userInfo = res.data
+      useAuthStore.changePermission(res.data.permissions)
         
-          router.push(to.path)
-       }
+      if(to.matched.length == 0) {
+        
+        router.push(to.path)
+      }
         next()
       } else{
         next('/login')

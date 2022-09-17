@@ -67,6 +67,12 @@ export const authStore = defineStore("auth", {
           localStorage.removeItem('token')
       })
     },
+    changePermission(permission:string[]) {
+      const useMenuStore = menuStore()
+      useMenuStore.generateSystemMenus(permission)
+      const useButtonStore = buttonStore()
+      useButtonStore.generateButtons(permission)
+    }
     // 退出
     // logout({ commit, state, dispatch }) {
     //   state.token = ""
