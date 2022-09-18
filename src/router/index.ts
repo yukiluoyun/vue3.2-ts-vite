@@ -35,14 +35,15 @@ const router = createRouter({
 
 router.beforeEach((to,from,next)=>{
   const token = localStorage.getItem('token')
+  const useAuthStore = authStore()
   NProgress.start()
-  if(!store.state.authStore.token && !token) {
+  if(!useAuthStore.token && !token) {
       if(to.path.startsWith('/login'))
       next()
       else {
         next('/login')
       }
-  } else if(!store.state.authStore.token && token) {
+  } else if(!useAuthStore.token && token) {
     loginByToken(token).then(res => {
       console.log("loginByToken==", res)
       if (res.data.status) {
@@ -50,15 +51,17 @@ router.beforeEach((to,from,next)=>{
       //  store.commit('authStore/addUserInfo',res.data)
       //  store.dispatch('menuStore/generateSystemMenus',res.data.permissions)
       //  store.dispatch('buttonStore/generateButtons',res.data.permissions)
-      const useAuthStore = authStore()
-      useAuthStore.userInfo = res.data
+        useAuthStore.userInfo = res.data
+        useAuthStore.token = res.data.token
       useAuthStore.changePermission(res.data.permissions)
         
-      if(to.matched.length == 0) {
-        
-        router.push(to.path)
-      }
-        next()
+        //去掉warning提醒 route 没有match ，原因是动态路由一开始是没有的，所以找不到to对应的路由，
+        // if(to.matched.length == 0) {
+        //   router.push(to.path) 
+        // }
+        // 但是这样会造成两次API调用，原因是刷新时单纯的不带参的next()，会先执行next(),然后再跑一遍router.beforeEach等整个流程
+        // 解决方案是如下设置，设置{...to}，直接一步到位
+        next({...to,replace:true}) //确保动态路由被添加
       } else{
         next('/login')
       }
